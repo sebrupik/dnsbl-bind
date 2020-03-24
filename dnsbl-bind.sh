@@ -1,5 +1,4 @@
-# #!/usr/local/bin/bash
-#!/bin/bash
+#!/usr/local/bin/bash
 BLOCK_START="--- blockeddomains_begin ----"
 BLOCK_END="---- blockeddomains_end ----"
 NAMED_DIR="/usr/local/etc/namedb"
@@ -16,7 +15,7 @@ cd ./input_files
 wget -i ../input_list.txt
 cd ..
 
-python3 ./dnsbl-bind.py $NAMED_DIR $OUTPUT_DIR ./input_files
+python3.7 ./dnsbl-bind.py $NAMED_DIR $OUTPUT_DIR ./input_files
 
 if [ ! -f $NAMED_DIR/$AGG_FILE ]; then
     touch $NAMED_DIR/$AGG_FILE
