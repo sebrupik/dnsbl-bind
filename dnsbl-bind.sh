@@ -8,6 +8,7 @@ SOURCE_URL="https://v.firebog.net/hosts/lists.php?type=tick"
 
 wget -O ./input_list.txt $SOURCE_URL
 mkdir -p ./input_files
+rm -rf ./input_files/*
 mkdir -p $OUTPUT_DIR
 rm -rf $OUTPUT_DIR/*
 
