@@ -59,8 +59,8 @@ def load_config(config_path):
 
 
 def main():
-    c = load_config("./config.json")
-    INPUT_PATH = c["INPUT_PATH"]
+    # c = load_config("./config.json")
+    # INPUT_PATH = c["INPUT_PATH"]
 
     blocked_domains = dict()
 
