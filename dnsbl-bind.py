@@ -60,13 +60,13 @@ def load_config(config_path):
 
 def main():
     c = load_config("./config.json")
-    path = c["INPUT_PATH"]
+    INPUT_PATH = c["INPUT_PATH"]
 
     blocked_domains = dict()
 
-    file_list = os.listdir(path)
+    file_list = os.listdir(INPUT_PATH)
     for file in file_list:
-        blocked_domains = parse_input_directory(path, file, blocked_domains)
+        blocked_domains = parse_input_directory(INPUT_PATH, file, blocked_domains)
 
     print("We parsed {0} input files".format(len(blocked_domains)))
     print("We parsed unique {0} domains".format(len([x for f in blocked_domains
