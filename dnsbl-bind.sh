@@ -30,7 +30,7 @@ echo "after some perl"
 
 for ZONE_FILE_NAME in $OUTPUT_DIR/*
 do
-  echo "include \"$OUTPUT_DIR/$ZONE_FILE_NAME\";" >> $NAMED_DIR/$AGG_FILE
+  echo "include \"$ZONE_FILE_NAME\";" >> $NAMED_DIR/$AGG_FILE
   echo $ZONE_FILE_NAME
 done
 
