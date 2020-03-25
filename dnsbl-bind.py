@@ -11,10 +11,10 @@ ZONE_FILE_PATH = "/usr/local/etc/namedb"
 ZONE_FILE_PATH_OUTPUT = "/usr/local/etc/namedb/blocked_zones"
 ZONE_FILE_LINE = "zone {0} {{ type master;  file \"{1}/{2}\"; }};\n"
 
-REGEX_BL = [r"^(?P<domain>.*?)\s(?P<tag>[#].*)$",                 # '206ads.com #Advertising Unknown'
-            r"^(?P<ip>(\d{1,3}.){3}(\d{1,3}))\s(?P<domain>\S*)\s+.*$",  # '0.0.0.0 www.ocsp.apple.com'
-            r"^(?P<domain>.*[.]\S*)$",                            # '00z70az77mnsa-00swj1zzprh.com'
-            r"^(::)\d?\s(?P<domain>.\S*)$"]                       # ':: 2606:4700:30::6818:754a'
+REGEX_BL = [r"^(?P<domain>.*?)\s(?P<tag>[#].*)$",                       # '206ads.com #Advertising Unknown'
+            r"^(?P<ip>(\d{1,3}.){3}(\d{1,3}))\s(?P<domain>.*)$",  # '0.0.0.0 www.ocsp.apple.com'
+            r"^(?P<domain>.*[.]\S*)$",                                  # '00z70az77mnsa-00swj1zzprh.com'
+            r"^(::)\d?\s(?P<domain>.\S*)$"]                              # ':: 2606:4700:30::6818:754a'
 
 
 def gen_uid():
@@ -34,9 +34,14 @@ def parse_input_directory(path, file, blocked_domains):
                     m = re.search(r, line)
                     if m:
                         matched = True
-                        if m.group("domain") not in blocked_domains[uid]["domains"]:
-                            blocked_domains[uid]["domains"][m.group("domain")] = []
-                        blocked_domains[uid]["domains"][m.group("domain")].append(file)
+                        domains = m.group("domain").split(" ")
+                        for d in domains:
+                            if d not in blocked_domains[uid]["domains"]:
+                                blocked_domains[uid]["domains"][d] = []
+                                blocked_domains[uid]["domains"][d].append(file)
+                        # if m.group("domain") not in blocked_domains[uid]["domains"]:
+                        #     blocked_domains[uid]["domains"][m.group("domain")] = []
+                        # blocked_domains[uid]["domains"][m.group("domain")].append(file)
                 if not matched:
                     print("no regex match for: {0} in {1}".format(line, file))
 
