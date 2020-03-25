@@ -42,6 +42,7 @@ def parse_input_directory(path, file, blocked_domains):
                         # if m.group("domain") not in blocked_domains[uid]["domains"]:
                         #     blocked_domains[uid]["domains"][m.group("domain")] = []
                         # blocked_domains[uid]["domains"][m.group("domain")].append(file)
+                        break
                 if not matched:
                     print("no regex match for: {0} in {1}".format(line, file))
 
