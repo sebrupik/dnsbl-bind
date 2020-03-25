@@ -48,7 +48,8 @@ def output_blocked_domains(output_path, blocked_domains):
         with open("{0}/{1}".format(output_path, uid), "w") as f:
             f.write("# {0}\n".format(blocked_domains[uid]["source"]))
             for domain in blocked_domains[uid]["domains"]:
-                f.write(ZONE_FILE_LINE.format(domain, ZONE_FILE_PATH, ZONE_FILE))
+                if len(domain.strip()) > 0:
+                    f.write(ZONE_FILE_LINE.format(domain, ZONE_FILE_PATH, ZONE_FILE))
 
 
 def load_config(config_path):
