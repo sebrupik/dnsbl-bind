@@ -38,7 +38,7 @@ def parse_input_directory(path, file, blocked_domains):
                         for d in domains:
                             if d not in blocked_domains[uid]["domains"]:
                                 blocked_domains[uid]["domains"][d] = []
-                                blocked_domains[uid]["domains"][d].append(file)
+                            blocked_domains[uid]["domains"][d].append(file)
                         # if m.group("domain") not in blocked_domains[uid]["domains"]:
                         #     blocked_domains[uid]["domains"][m.group("domain")] = []
                         # blocked_domains[uid]["domains"][m.group("domain")].append(file)
@@ -50,12 +50,14 @@ def parse_input_directory(path, file, blocked_domains):
 
 
 def output_blocked_domains(output_path, blocked_domains):
+    written_domains = []
     for uid in blocked_domains:
         with open("{0}/{1}".format(output_path, uid), "w") as f:
             f.write("# {0}\n".format(blocked_domains[uid]["source"]))
             for domain in blocked_domains[uid]["domains"]:
-                if len(domain.strip()) > 0:
+                if len(domain.strip()) > 0 and domain not in written_domains:
                     f.write(ZONE_FILE_LINE.format(domain, ZONE_FILE_PATH, ZONE_FILE))
+                    written_domains.append(domain)
 
 
 def load_config(config_path):
