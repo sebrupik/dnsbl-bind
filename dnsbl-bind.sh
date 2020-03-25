@@ -18,20 +18,13 @@ cd ..
 
 python3.7 ./dnsbl-bind.py $NAMED_DIR $OUTPUT_DIR ./input_files
 
+rm -f $NAMED_DIR/$AGG_FILE
 if [ ! -f $NAMED_DIR/$AGG_FILE ]; then
     touch $NAMED_DIR/$AGG_FILE
 fi
-
-echo "before some perl"
-perl -i -pe 'BEGIN{undef $/;} s/$BLOCK_START.*$BLOCK_END/ /smg' $NAMED_DIR/$AGG_FILE
-echo "$BLOCK_START" >> $NAMED_DIR/$AGG_FILE
-
-echo "after some perl"
 
 for ZONE_FILE_NAME in $OUTPUT_DIR/*
 do
   echo "include \"$ZONE_FILE_NAME\";" >> $NAMED_DIR/$AGG_FILE
   echo $ZONE_FILE_NAME
 done
-
-echo "$BLOCK_END" >> $NAMED_DIR/$AGG_FILE
