@@ -9,7 +9,7 @@ INPUT_PATH = ""
 ZONE_FILE = "blockeddomains.zone.dns"
 ZONE_FILE_PATH = "/usr/local/etc/namedb"
 ZONE_FILE_PATH_OUTPUT = "/usr/local/etc/namedb/blocked_zones"
-ZONE_FILE_LINE = "zone {0} {{ type master;  file \"{1}/{2};\"}};\n"
+ZONE_FILE_LINE = "zone {0} {{ type master;  file \"{1}/{2}\n; }};\n"
 
 REGEX_BL = [r"^(?P<domain>.*?)\s(?P<tag>[#].*)$",                 # '206ads.com #Advertising Unknown'
             r"^(?P<ip>(\d{1,3}.){3}(\d{1,3}))\s(?P<domain>.*)$",  # '0.0.0.0 www.ocsp.apple.com'
