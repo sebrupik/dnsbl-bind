@@ -51,7 +51,7 @@ def parse_input_directory(path, file, blocked_domains):
 
 
 def check_not_present(blocked_domains, new_domain):
-    all_domains = [domains for uid in blocked_domains for domains in blocked_domains[uid]]
+    all_domains = [domains for uid in blocked_domains for domains in blocked_domains[uid]["domains"]]
 
     return new_domain not in all_domains
 
@@ -60,6 +60,8 @@ def output_blocked_domains(output_path, blocked_domains):
     written_domains = []
     for uid in blocked_domains:
         with open("{0}/{1}".format(output_path, uid), "w") as f:
+            print("Writing {0}, source {1} with {2} items".format(uid, blocked_domains[uid]["source"],
+                                                                  len(blocked_domains[uid]["domains"])))
             f.write("# {0}\n".format(blocked_domains[uid]["source"]))
             for domain in blocked_domains[uid]["domains"]:
                 if len(domain.strip()) > 0 and domain not in written_domains:
