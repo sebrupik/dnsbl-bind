@@ -22,6 +22,7 @@ def gen_uid():
 
 
 def parse_input_directory(path, file, blocked_domains):
+    forbidden = ["localhost"]
     uid = gen_uid()
     with open("{0}/{1}".format(path, file), "r", encoding="ISO-8859-1") as f:
         blocked_domains["uids"][uid] = file
@@ -34,7 +35,7 @@ def parse_input_directory(path, file, blocked_domains):
                         matched = True
                         domains = m.group("domain").split(" ")
                         for d in domains:
-                            if d.lower() not in blocked_domains["all"]:
+                            if d.lower() not in blocked_domains["all"] and d.lower() not in forbidden:
                                 blocked_domains["all"][d.lower()] = uid
                         break
                 if not matched:
