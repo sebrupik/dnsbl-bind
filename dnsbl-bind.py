@@ -5,7 +5,7 @@ import re
 import string
 import sys
 
-INPUT_PATH = ""
+INPUT_PATH = "./input_files"
 ZONE_FILE = "blockeddomains.zone.dns"
 ZONE_FILE_PATH = "/usr/local/etc/namedb"
 ZONE_FILE_PATH_OUTPUT = "/usr/local/etc/namedb/blocked_zones"
@@ -36,9 +36,10 @@ def parse_input_directory(path, file, blocked_domains):
                         matched = True
                         domains = m.group("domain").split(" ")
                         for d in domains:
-                            if d not in blocked_domains[uid]["domains"]:
-                                blocked_domains[uid]["domains"][d] = []
-                            blocked_domains[uid]["domains"][d].append(file)
+                            if check_not_present(blocked_domains, d):
+                                if d not in blocked_domains[uid]["domains"]:
+                                    blocked_domains[uid]["domains"][d] = []
+                                blocked_domains[uid]["domains"][d].append(file)
                         # if m.group("domain") not in blocked_domains[uid]["domains"]:
                         #     blocked_domains[uid]["domains"][m.group("domain")] = []
                         # blocked_domains[uid]["domains"][m.group("domain")].append(file)
@@ -47,6 +48,12 @@ def parse_input_directory(path, file, blocked_domains):
                     print("no regex match for: {0} in {1}".format(line, file))
 
     return blocked_domains
+
+
+def check_not_present(blocked_domains, new_domain):
+    all_domains = [domains for uid in blocked_domains for domains in blocked_domains[uid]]
+
+    return new_domain not in all_domains
 
 
 def output_blocked_domains(output_path, blocked_domains):
