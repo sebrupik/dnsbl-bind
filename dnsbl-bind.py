@@ -60,13 +60,13 @@ def output_blocked_domains(output_path, blocked_domains, output_type):
         sorted_domains[blocked_domains["all"][d]].append(d)
 
     for uid in sorted_domains:
-        output_zones(output_path, blocked_domains, sorted_domains, uid, output_type)
+        output_zones(blocked_domains, sorted_domains, uid, output_type)
 
-    output_agg_file(output_path, sorted_domains.keys(), output_type)
+    output_agg_file(sorted_domains.keys(), output_type)
 
 
-def output_zones(output_path, blocked_domains, sorted_domains, uid, output_type):
-    with open("{0}/{1}".format(output_path, uid), "w") as f:
+def output_zones(blocked_domains, sorted_domains, uid, output_type):
+    with open("{0}/{1}".format(ZONE_FILE_PATH_OUTPUT, uid), "w") as f:
         print("Writing {0}, source {1} with {2} items".format(uid, blocked_domains["uids"][uid],
                                                               len(sorted_domains[uid])))
         f.write("# {0}\n".format(blocked_domains["uids"][uid]))
@@ -78,12 +78,12 @@ def output_zones(output_path, blocked_domains, sorted_domains, uid, output_type)
                     f.write(RPZ_FILE_LINE.format(domain))
 
 
-def output_agg_file(output_path, blocked_domain_file_list, output_type):
-    with open("{0}/{1}".format(output_path, AGG_FILE), "w") as f:
+def output_agg_file(blocked_domain_file_list, output_type):
+    with open("{0}/{1}".format(ZONE_FILE_PATH, AGG_FILE), "w") as f:
         if output_type == "PLAIN_ZONE":
             # blah
             for bd in blocked_domain_file_list:
-                f.write(ZONE_FILE_LINE_02.format("{0}/{1}".format(output_path, bd)))
+                f.write(ZONE_FILE_LINE_02.format("{0}/{1}".format(ZONE_FILE_PATH_OUTPUT, bd)))
         elif output_type == "RPZ":
             rpz_block = ""
 
@@ -91,7 +91,7 @@ def output_agg_file(output_path, blocked_domain_file_list, output_type):
             for bd in blocked_domain_file_list:
                 f.write(RPZ_CONFIG_BLOCK_01.format(bd))
 
-                rpz_block = rpz_block+RPZ_CONFIG_BLOCK_02.format(bd, "{0}/{1}".format(output_path, bd))
+                rpz_block = rpz_block+RPZ_CONFIG_BLOCK_02.format(bd, "{0}/{1}".format(ZONE_FILE_PATH_OUTPUT, bd))
             f.write("};\n\n")
 
             f.write(rpz_block)
