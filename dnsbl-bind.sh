@@ -16,15 +16,9 @@ cd ./input_files
 wget -i ../input_list.txt
 cd ..
 
-python3.7 ./dnsbl-bind.py $NAMED_DIR $OUTPUT_DIR ./input_files
-
 rm -f $NAMED_DIR/$AGG_FILE
 if [ ! -f $NAMED_DIR/$AGG_FILE ]; then
     touch $NAMED_DIR/$AGG_FILE
 fi
 
-for ZONE_FILE_NAME in $OUTPUT_DIR/*
-do
-  echo "include \"$ZONE_FILE_NAME\";" >> $NAMED_DIR/$AGG_FILE
-  echo $ZONE_FILE_NAME
-done
+python3.7 ./dnsbl-bind.py $NAMED_DIR $OUTPUT_DIR ./input_files rpz
