@@ -15,9 +15,17 @@ ZONE_FILE_PATH_OUTPUT = "/usr/local/etc/namedb/blocked_zones"
 ZONE_FILE_LINE = "zone {0} {{ type master;  file \"{1}/{2}\"; }};\n"
 ZONE_FILE_LINE_02 = "include \"{0}\";"
 
-RPZ_CONFIG_BLOCK_01 = "response-policy {{ zone \"{0}\"; }};\n"
+RPZ_CONFIG_BLOCK_01a = "response-policy {{ {0} }};\n"
+RPZ_CONFIG_BLOCK_01b = "zone \"{0}\";"
 RPZ_CONFIG_BLOCK_02 = "zone \"{0}\" {{\n    type master;\n    file \"{1}\";\n}};\n"
 RPZ_FILE_LINE = "{0} CNAME .\n"
+
+NAMED_OPTIONS = "//options++//{0}//options--//"
+NAMED_ZONES = "//zones++//{0}//zones--//"
+
+REGEX_OPTIONS = r"(\/\/options\+\+\/\/).*(\/\/options--\/\/)"
+REGEX_ZONES = r"(\/\/zones\+\+\/\/).*(\/\/zones--\/\/)"
+
 
 REGEX_BL = [r"^(?P<domain>.*?)\s(?P<tag>[#].*)$",                       # '206ads.com #Advertising Unknown'
             r"^(?P<ip>(\d{1,3}.){3}(\d{1,3}))\s(?P<domain>.*)$",  # '0.0.0.0 www.ocsp.apple.com'
@@ -66,10 +74,16 @@ def output_blocked_domains(output_path, blocked_domains, output_type):
 
 
 def output_zones(blocked_domains, sorted_domains, uid, output_type):
+    with open("./rpz_db_header.txt", "r") as f:
+        rpz_db_header = f.read()
+
     with open("{0}/{1}".format(ZONE_FILE_PATH_OUTPUT, uid), "w") as f:
         print("Writing {0}, source {1} with {2} items".format(uid, blocked_domains["uids"][uid],
                                                               len(sorted_domains[uid])))
-        f.write("# {0}\n".format(blocked_domains["uids"][uid]))
+        f.write("// {0}\n".format(blocked_domains["uids"][uid]))
+        if output_type == "RPZ":
+            f.write(rpz_db_header)
+            f.write("\n")
         for domain in sorted_domains[uid]:
             if len(domain.strip()) > 0:
                 if output_type == "PLAIN_ZONE":
@@ -79,22 +93,31 @@ def output_zones(blocked_domains, sorted_domains, uid, output_type):
 
 
 def output_agg_file(blocked_domain_file_list, output_type):
-    with open("{0}/{1}".format(ZONE_FILE_PATH, AGG_FILE), "w") as f:
-        if output_type == "PLAIN_ZONE":
+    if output_type == "PLAIN_ZONE":
+        with open("{0}/{1}".format(ZONE_FILE_PATH, AGG_FILE), "w") as f:
             # blah
             for bd in blocked_domain_file_list:
                 f.write(ZONE_FILE_LINE_02.format("{0}/{1}".format(ZONE_FILE_PATH_OUTPUT, bd)))
-        elif output_type == "RPZ":
-            rpz_block = ""
+    elif output_type == "RPZ":
+        rpz_block = ""
+        zone_block = ""
+        for bd in blocked_domain_file_list:
+            zone_block = zone_block + RPZ_CONFIG_BLOCK_01b.format(bd)
+            rpz_block = rpz_block + RPZ_CONFIG_BLOCK_02.format(bd, "{0}/{1}".format(ZONE_FILE_PATH_OUTPUT, bd))
 
-            f.write("options {\n")
-            for bd in blocked_domain_file_list:
-                f.write(RPZ_CONFIG_BLOCK_01.format(bd))
+        updated_named_conf("{0}/named.conf".format(ZONE_FILE_PATH), zone_block, rpz_block)
 
-                rpz_block = rpz_block+RPZ_CONFIG_BLOCK_02.format(bd, "{0}/{1}".format(ZONE_FILE_PATH_OUTPUT, bd))
-            f.write("};\n\n")
 
-            f.write(rpz_block)
+def updated_named_conf(target, zone_block, rpz_block):
+    f_contents = ""
+    with(open(target, "r")) as f:
+        f_contents = f.read()
+
+    with(open(target), "w") as f:
+        new_contents = re.sub(REGEX_OPTIONS, NAMED_OPTIONS.format(rpz_block), f_contents, flags=re.DOTALL)
+        new_contents = re.sub(REGEX_ZONES, NAMED_ZONES.format(zone_block), new_contents, flags=re.DOTALL)
+
+        f.write(new_contents)
 
 
 def load_config(config_path):
