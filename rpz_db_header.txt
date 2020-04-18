@@ -6,4 +6,4 @@ $TTL    604800
                     2419200         ; Expire
                      604800 )       ; Negative Cache TTL
 
-@       IN      NS      your_dns_fqdn.
+@       IN      NS      someserver.
